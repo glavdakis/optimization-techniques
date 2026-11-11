@@ -45,6 +45,6 @@ daspect([1 1 1]);
 title(titleText);
 xlabel(xLabel);
 ylabel(yLabel);
-legend('Location', 'best');
+legend('Location', 'southoutside', 'NumColumns', 3); % keep the legend off the plot area
 
 end
