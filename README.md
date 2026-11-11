@@ -2,8 +2,6 @@
 
 This repository contains assignments completed for the **Optimization Techniques** course at the **Department of Electrical and Computer Engineering (ECE), Aristotle University of Thessaloniki (AUTH)** during the **2024–2025 academic year**.
 
-Each folder contains the MATLAB source (`src/`), the generated figures (`plots/`), the assignment and the report (in Greek).
-
 ## 📋 Contents
 
 ### 📁 Work 1: Line Search Methods (Single-Variable Minimization)
