@@ -1,18 +1,14 @@
-function [chr2] = nextGeneration(chr1, sum, I, set, N)
-% function that finds the next generation
+function [chr2] = nextGeneration(chr1, selectionCount, I)
+% function that creates the next generation from the result of the roulette selection:
+% chromosome chr1(I(i), :) is copied selectionCount(i) times
 
+chr2 = zeros(size(chr1));
 count = 1;
-for i = 1:1:10
-    if sum(i) ~= 0
-        for j = 1:1:sum(i)
-            chr2(count, :) = chr1(I(i), :);
-            count = count + 1;
-        end
+for i = 1:numel(selectionCount)
+    for j = 1:selectionCount(i)
+        chr2(count, :) = chr1(I(i), :);
+        count = count + 1;
     end
 end
 
-if set ~= 1
-    chr2(i, 18) = N;
-end
-    
 end

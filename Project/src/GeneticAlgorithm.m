@@ -1,78 +1,100 @@
-function [] = GeneticAlgorithm()
-% main function for the first Genetic Algorithm
-
-clear;
-clc;
+function [best, bestTime] = GeneticAlgorithm()
+% main function for the first Genetic Algorithm (constant inflow V = 100)
 
 % a and c values
 a = [1.25 1.25 1.25 1.25 1.25 1.5 1.5 1.5 1.5 1.5 1 1 1 1 1 1 1];
 c = [54.13 21.56 34.08 49.19 33.03 21.84 29.96 24.87 47.24 33.97 26.89 32.76 39.98 37.12 53.83 61.65 59.73];
 
+% parameters
+popSize = 10;          % chromosomes per generation
+epsilon = 1e-6;        % termination accuracy
+patience = 500;        % generations with relative change of the best fitness < epsilon before stopping
+maxGenerations = 20000;
+pm = 0.3;              % mutation probability of each chromosome
+pc = 0.6;              % crossover probability of each pair of chromosomes
+
 % initial population
-for i = 1:1:10 
-     chr1(i, :) = firstGeneration;
+chr = zeros(popSize, 17);
+for i = 1:popSize
+    chr(i, :) = firstGeneration;
 end
 
-% fitness function;
-fitnessfunction = fitnessFunction(a, c, chr1);
+bestFitness = zeros(maxGenerations, 1);
+meanFitness = zeros(maxGenerations, 1);
+stall = 0;
 
-% roulette selection
-[sum, I] = rouletteSelection(fitnessfunction);
-
-% next Generation
-i = 0;
-while true
-    i = i + 1;
-    chr2 = nextGeneration(chr1, sum, I, 1, 100);
-    
+for gen = 1:maxGenerations
     % evaluation
-    fitnessfunction2(i, :) = fitnessFunction(a, c, chr2);
-    
-    % mutation
-    int = randi([1 10]);
-    chr2(int, :) = mutation(chr2(int, :), c);
-    
-    % crossover
-    int2 = randi([1 10]);
-    int3 = randi([1 10]);
-    d1 = chr2(int2, :);
-    d2 = chr2(int3, :);
-    [chr2(int2, :), chr2(int3, :)] = crossover(d1, d2, c, 1, 100);
-    
-    % termination condition
-    if i > 1
-        if norm((fitnessfunction2(i - 1, :) - fitnessfunction2(i, :))/fitnessfunction2(i - 1, :)) < 1e-20
+    fit = fitnessFunction(a, c, chr);
+    [bestFitness(gen), iBest] = max(fit);
+    meanFitness(gen) = mean(fit);
+    elite = chr(iBest, :);
+
+    % termination condition: |f_best(k-1) - f_best(k)| / f_best(k-1) < epsilon for patience generations
+    if gen > 1
+        if abs((bestFitness(gen - 1) - bestFitness(gen)) / bestFitness(gen - 1)) < epsilon
+            stall = stall + 1;
+        else
+            stall = 0;
+        end
+        if stall >= patience
             break;
         end
     end
-    
+
     % roulette selection
-    [sum, I] = rouletteSelection(fitnessfunction2);
-    chr1 = chr2;
+    [selectionCount, I] = rouletteSelection(fit);
+    chr = nextGeneration(chr, selectionCount, I);
+
+    % mutation: every chromosome is mutated with probability pm
+    for k = 1:popSize
+        if rand < pm
+            chr(k, :) = mutation(chr(k, :), c);
+        end
+    end
+
+    % crossover: random pairs of chromosomes are crossed with probability pc
+    pairs = randperm(popSize);
+    for k = 1:2:popSize - 1
+        if rand < pc
+            k1 = pairs(k);
+            k2 = pairs(k + 1);
+            [chr(k1, :), chr(k2, :)] = crossover(chr(k1, :), chr(k2, :), c);
+        end
+    end
+
+    % elitism: the best chromosome replaces the worst one, so it is never lost
+    newFit = fitnessFunction(a, c, chr);
+    [~, iWorst] = min(newFit);
+    chr(iWorst, :) = elite;
 end
 
-disp("The number of iterations is " + i);
-disp("The final chromosome is");
-disp(chr2(10, :)); 
+bestFitness = bestFitness(1:gen);
+meanFitness = meanFitness(1:gen);
+best = elite;
+bestTime = totalTime(a, c, best, 100);
 
-% optimal time calculations
-time = 0;
-for l = 1:1:17
-    time = time + a(l) * chr2(10, l)/(1 - (chr2(10, l)/c(l)));
-end
-disp("Total time is " + time);
+disp("The number of generations is " + gen);
+disp("The best chromosome is");
+disp(round(best, 2));
+disp("The total travel time per vehicle is " + bestTime + " min");
 
 % last check that all constraints are satisfied
-if constraints(chr2(1, :), c, 100) == 1
+if constraints(best, c) == 1
     disp("Solution is valid.");
 else
     disp("Solution is invalid.");
 end
 
 % plot
-plot(fitnessfunction2(1, :), '--o');        
+figure
+plot(1:gen, bestFitness, 'LineWidth', 1.2);
+hold on
+plot(1:gen, meanFitness, '--', 'LineWidth', 1);
+hold off
 xlabel("Generation");
 ylabel("Fitness value");
+legend("best chromosome", "population mean", 'Location', 'southeast');
+grid on
 
 end
-

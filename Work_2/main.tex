@@ -1,0 +1,517 @@
+\documentclass[11pt,a4paper,onecolumn,final]{article}
+
+%OT1 is the default font encoding of memoir class
+%It is generally advised to put it before inputenc
+%\usepackage{kerkis}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{chngcntr}
+\counterwithin{figure}{section}
+
+\usepackage{tikz}
+\usetikzlibrary{angles, quotes}
+
+\usepackage{caption}
+%Input encoding for typing directly Greek characters
+%Other values for the option: latin1, ascii, ansinew
+%It is generally advised to put it before babel
+\usepackage[utf8]{inputenc}
+
+%MAIN Language the LAST one
+\usepackage[greek,english]{babel}
+
+
+\usepackage[
+backend=biber,
+style=alphabetic,
+sorting=ynt
+]{biblatex}
+\addbibresource{sample.bib}
+
+%\usepackage{kerkis}
+
+%The teubner package extends the facilities offered by the CB Greek fonts
+%NOTE: This includes also the graphicx package!
+%NOTE: When the teubner package is loaded, command \cap (denoting set intersection) is overwritten
+%NOTE: TEUBNER.STY FILE HAS BEEN CHANGED A BIT IN LINES 255-257 WITH 3 REPLACEMENTS \cap -> \capt
+\usepackage{teubner}
+
+%Package for displaying math
+\usepackage{amsmath}
+
+%Loading a superset of amsfonts
+\usepackage{amssymb}
+
+%Provides an enhanced version of \newtheorem
+%1.Defines * for unnumbered environments
+%2.Defines a proof environment
+%3.Defines plain, definition, and remark theorem styles
+\usepackage{amsthm}
+
+%Allows text in eps files to be replaced with LATEX symbols
+\usepackage{psfrag}
+
+%An extension of the cite package, compatible with the IEEEtranN bibliography style
+\usepackage[numbers,sort&compress]{natbib}
+
+\makeatletter\let\c@lofdepth\relax\let\c@lotdepth\relax\makeatother
+\usepackage[small,bf,tight]{subfigure}
+
+%Math symbols of the dsfont style. Enables the use of \mathds{}
+\usepackage{dsfont}
+
+%Defines several symbols in text mode (e.g. the \textreferencemark for use in the itemize environment)
+\usepackage{textcomp}
+
+%Enables the Ralph Smith's Formal Script font in math mode via the \mathscr{} command
+\usepackage{mathrsfs}
+
+\usepackage{geometry}
+%PDF VIEW
+\geometry{total={210mm,297mm},left=25mm,right=25mm,bindingoffset=0mm, top=25mm,bottom=25mm}
+%PRINT
+%\geometry{total={210mm,297mm},left=20mm,right=20mm,bindingoffset=10mm, top=25mm,bottom=25mm}
+
+\usepackage[breaklinks=true,colorlinks=true,
+%linkcolor=blue,urlcolor=blue,citecolor=blue,% PDF VIEW
+linkcolor=black,urlcolor=black,citecolor=black,% PRINT
+bookmarks=false,bookmarksopenlevel=2]{hyperref}
+\usepackage{hyperref}
+
+\usepackage{cleveref}
+
+%Convenient language switch
+\newcommand{\gr}[1]{\foreignlanguage{greek}{#1}}
+\newcommand{\en}[1]{\foreignlanguage{english}{#1}}
+
+%\newtheorem{definition}{Ορισμός}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+\newtheorem{exercise}{Exercise}
+%\newtheorem{lemma}{Λήμμα}
+\newtheorem{lemma}{Lemma}
+%\newtheorem{proof}{Proof}
+\newtheorem{notation}{Notation}
+\newtheorem{problem}{Problem}
+%\newtheorem{proposition}{Πρόταση}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{solution}{Solution}
+\newtheorem{summary}{Summary}
+\newcommand{\argmax}{\arg\!\max}
+%\addto\captionsgreek{\renewcommand{\chaptername}{Κεφάλαιο}}
+%\addto\captionsgreek{\renewcommand{\tablename}{Πίνακας }}
+%\addto\captionsgreek{\renewcommand{\proofname}{Απόδειξη }}
+
+\makeatletter
+%\renewcommand{\fnum@figure}{Σχήμα \thefigure}
+%\renewcommand{\fnum@table}{Πίνακας \thetable}
+\makeatother
+\setlength{\textfloatsep}{1pt}
+
+\begin{document}
+
+%COVER PAGE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\thispagestyle{empty}
+{\sffamily\centering\Large
+
+{\Large \textbf{Τεχνικές βελτιστοποίησης}} \\[0.5cm]
+
+\vspace{1.0cm}
+
+{\Large \textbf{2η Εργαστηριακή άσκηση}\\
+\textbf{Ελαχιστοποίηση συναρτήσεων πολλών μεταβλητών χωρίς περιορισμούς με χρήση παραγώγων } \\[0.5cm]
+
+\vspace{1.0cm}
+
+{\LARGE Λαβδάκης Γεώργιος \\
+ΑΕΜ:10672}
+
+\vspace{1.0cm}
+
+\tableofcontents
+
+\newpage
+
+\begin{flushleft}
+
+Σκοπός της 2ης εργασίας είναι η ελαχιστοποίηση της συνάρτησης \(f(x,y)=x^5e^{-x^2-y^2}\) με χρήση τριών μεθόδων, τη μέθοδο μέγιστης καθόδου, τη μέθοδο newton και τη μέθοδο levenberg-marquardt καθώς και ο σχολιασμός των αποτελεσμάτων. Σε όλη την εργασία θεωρούμε ακρίβεια \(\epsilon=0.001\). 
+
+\section{Θέμα 1: Η συνάρτηση}
+
+Η γραφική παράσταση της συνάρτησης \(f(x,y)=x^5e^{-x^2-y^2}\) φαίνεται στο σχήμα \ref{fig:func} και ο σχετικός κώδικας υπάρχει στο αρχείο plot\_function.m.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{func_plot.jpg}
+    \caption{Γραφική παράσταση της \(f(x,y)=x^5e^{-x^2-y^2}\)}
+    \label{fig:func}
+\end{figure}
+ 
+Για τα επόμενα ερωτήματα θα χρειαστούμε το grad της \(f(x,y)\), \(\nabla f(x,y)\), και τον εσσιανό πίνακά της, \(\nabla^2 f(x,y)\).
+
+\newpage
+
+\section{Θέμα 2:Μέγιστη κάθοδος}
+
+Σε αυτό το θέμα θα υλοποιήσουμε τη μέθοδο της μέγιστης καθόδου \(x_{k+1}=x_{k}+\gamma_{k}d_{k}\), με κατεύθυνση \(d_{k}=-\nabla f(x_{k})\), για να ελαχιστοποιήσουμε τη συνάρτηση \(f(x,y)\) χρησιμοποιώντας ως αρχικά σημεία τα (0,0), (-1,1) και (1,-1). Το βήμα θα επιλεγεί αρχικά σταθερό και ίσο με \(\gamma_{k}=0.1\), μετά τέτοιο ώστε να ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) και τέλος βάσει του κανόνα Armijo. 
+
+\subsection{Σταθερό βήμα}
+
+Για μεγάλες τιμές του \(\gamma_{k}\) ο αλγόριθμος αδυνατεί να βρει το ελάχιστο και προκαλείται αστάθεια ενώ, για μικρές τιμές του αυξάνεται σημαντικά ο αριθμός επαναλήψεων. Επιλέγουμε λοιπόν, μετά απο δοκιμές, σταθερό βήμα \(\gamma_{k}=0.1\) και για αρχικό σημείο \((x_{0},y_{0})=(0,0)\) προκύπτουν οι γραφικές παραστάσεις \ref{fig:steep_const_zero1} και \ref{fig:steep_const_zero2}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{steep_const_zero1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο της μέγιστης καθόδου για σταθερό \(\gamma_{k}\) με αρχικό σημείο (0,0)}
+    \label{fig:steep_const_zero1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{steep_const_zero2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:steep_const_zero2}
+\end{figure}
+
+ Όμοια, για \((x_{0},y_{0})=(-1,1)\) προκύπτουν οι \ref{fig:steep_const_one1} και \ref{fig:steep_const_one2}.
+
+ \begin{figure}[H]
+     \centering
+     \includegraphics[width=0.8\linewidth]{steep_const_one1.jpg}
+     \caption{Εύρεση ελαχίστου με τη μέθοδο της μέγιστης καθόδου για σταθερό \(\gamma_{k}\) με αρχικό σημείο (-1,1)}
+     \label{fig:steep_const_one1}
+ \end{figure}
+
+ \begin{figure}[H]
+     \centering
+     \includegraphics[width=0.8\linewidth]{steep_const_one2.jpg}
+     \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+     \label{fig:steep_const_one2}
+ \end{figure}
+
+ Τέλος, για \((x_{0},y_{0})=(1,-1)\) προκύπτουν οι \ref{fig:steep_const_two1} και \ref{fig:steep_const_two2}.
+
+ \begin{figure}[H]
+     \centering
+     \includegraphics[width=0.8\linewidth]{steep_const_two1.jpg}
+     \caption{Εύρεση ελαχίστου με τη μέθοδο της μέγιστης καθόδου για σταθερό \(\gamma_{k}\) με αρχικό σημείο (1,-1)}
+     \label{fig:steep_const_two1}
+ \end{figure}
+
+ \begin{figure}[H]
+     \centering
+     \includegraphics[width=0.8\linewidth]{steep_const_two2.jpg}
+     \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+     \label{fig:steep_const_two2}
+ \end{figure}
+
+\subsection{Βήμα που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\)}
+
+Ψάχνουμε το βήμα \(\gamma_{k}\) που ελαχιστοποιεί τη συνάρτηση μιας μεταβλητής \(g(\gamma)=f(x_{k}+\gamma d_{k})\), δηλαδή την τιμή της \(f\) κατά μήκος της κατεύθυνσης καθόδου \(d_{k}\). Το βήμα αυτό επιλέγεται με τη μέθοδο της διχοτόμου με χρήση παραγώγου στο αρχικό διάστημα [0,3] και τελικό εύρος του διαστήματος αναζήτησης \(l=0.01\), ενώ η παράγωγος \(g'(\gamma)\) υπολογίζεται αριθμητικά με κεντρικές διαφορές. Έτσι, για αρχικό σημείο \((x_{0},y_{0})=(0,0)\) προκύπτουν οι γραφικές παραστάσεις \ref{fig:steep_min_zero1} και \ref{fig:steep_min_zero2}. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{steep_min_zero1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο της μέγιστης καθόδου για \(\gamma_{k}\) που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) με αρχικό σημείο (0,0)}
+    \label{fig:steep_min_zero1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{steep_min_zero2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:steep_min_zero2}
+\end{figure}
+
+
+Όμοια, για \((x_{0},y_{0})=(-1,1)\) προκύπτουν οι \ref{fig:steep_min_one1} και \ref{fig:steep_min_one2}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{steep_min_one1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο της μέγιστης καθόδου για \(\gamma_{k}\) που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) με αρχικό σημείο (-1,1)}
+    \label{fig:steep_min_one1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{steep_min_one2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:steep_min_one2}
+\end{figure}
+
+ Τέλος, για \((x_{0},y_{0})=(1,-1)\) προκύπτουν οι \ref{fig:steep_min_two1} και \ref{fig:steep_min_two2}.
+
+ \begin{figure}[H]
+     \centering
+     \includegraphics[width=0.8\linewidth]{steep_min_two1.jpg}
+     \caption{Εύρεση ελαχίστου με τη μέθοδο της μέγιστης καθόδου για \(\gamma_{k}\) που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) με αρχικό σημείο (1,-1)}
+     \label{fig:steep_min_two1}
+ \end{figure}
+
+ \begin{figure}[H]
+     \centering
+     \includegraphics[width=0.8\linewidth]{steep_min_two2.jpg}
+     \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+     \label{fig:steep_min_two2}
+ \end{figure}
+
+\subsection{Βήμα σύμφωνα με τον κανόνα Armijo}
+
+Ο κανόνας Armijo αποτελεί μια μέθοδο διαδοχικής μείωσης του \(\gamma_{k}\) η οποία εξαρτάται από τις σταθερές \(a\in[10^{-5},10^{-1}]\), \(\beta \in [\frac{1}{10},\frac{1}{2}]\) και το αρχικό βήμα s. Συγκεκριμένα, \(\gamma_{k}=s\beta^{m_{k}}\), όπου \(m_{k}\) ο μικρότερος μη αρνητικός ακέραιος για τον οποίο ισχύει
+\[f(x_{k})-f(x_{k}+s\beta^{m_{k}}d_{k}) \geq -a s\beta^{m_{k}}\nabla f(x_{k})^{T}d_{k}\]
+δηλαδή, ξεκινάμε από το βήμα s και το πολλαπλασιάζουμε με \(\beta\) μέχρι η μείωση της \(f\) να είναι αρκετά μεγάλη. Για μεγάλες τιμές του α η συνθήκη γίνεται αυστηρότερη και επιλέγονται μικρότερα βήματα, ενώ για μικρές τιμές του α γίνονται δεκτά μεγαλύτερα βήματα. Για μεγάλες τιμές του β το βήμα μειώνεται πιο αργά, άρα βρίσκεται πιο κοντά στο μεγαλύτερο αποδεκτό βήμα αλλά απαιτούνται περισσότεροι υπολογισμοί της \(f\), ενώ για μικρές τιμές του β το βήμα μειώνεται γρήγορα. Για βήμα \(\gamma_{k}\), λοιπόν, που επιλέγεται σύμφωνα με τον κανόνα Armijo, με σταθερές \(a=10^{-4}, \beta=0.4, s=1\) μετά από δοκιμές, και αρχικό σημείο \((x_{0},y_{0})=(0,0)\) προκύπτουν οι γραφικές παραστάσεις \ref{fig:steep_armijo_zero1} και \ref{fig:steep_armijo_zero2}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{steep_armijo_zero1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο της μέγιστης καθόδου για \(\gamma_{k}\) βάσει κανόνα Armijo με αρχικό σημείο (0,0)}
+    \label{fig:steep_armijo_zero1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{steep_armijo_zero2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:steep_armijo_zero2}
+\end{figure}
+
+Όμοια, για \((x_{0},y_{0})=(-1,1)\) προκύπτουν οι \ref{fig:steep_armijo_one1} και \ref{fig:steep_armijo_one2}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{steep_armijo_one1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο της μέγιστης καθόδου για \(\gamma_{k}\) βάσει κανόνα Armijo με αρχικό σημείο (-1,1)}
+    \label{fig:steep_armijo_one1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{steep_armijo_one2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:steep_armijo_one2}
+\end{figure}
+
+Τέλος, για \((x_{0},y_{0})=(1,-1)\) προκύπτουν οι \ref{fig:steep_armijo_two1} και \ref{fig:steep_armijo_two2}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{steep_armijo_two1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο της μέγιστης καθόδου για \(\gamma_{k}\) βάσει κανόνα Armijo με αρχικό σημείο (1,-1)}
+    \label{fig:steep_armijo_two1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{steep_armijo_two2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:steep_armijo_two2}
+\end{figure}
+
+\subsection{Παρατηρήσεις}
+
+\label{comm}
+
+\(\cdot\) Η \(f(x,y)\) έχει ολικό ελάχιστο στο σημείο \((-\sqrt{5/2},0)\approx(-1.5811,0)\) με τιμή \(f\approx-0.8112\) και ολικό μέγιστο στο συμμετρικό σημείο \((\sqrt{5/2},0)\). Μακριά από αυτά τα δύο σημεία, και κοντά στην ευθεία \(x=0\), η \(f\) είναι σχεδόν επίπεδη και ίση με 0, οπότε εκεί ισχύει \(|\nabla f(x,y)|\approx 0\).
+
+\(\cdot\) Παρατηρούμε ότι για αρχικό σημείο (0,0) ο αλγόριθμος τερματίζει ακαριαία. Αυτό είναι λογικό καθώς εφαρμόζοντας τη συνθήκη τερματισμού \(|\nabla f(x,y)|<\epsilon\), \(\epsilon>0\) στο (0,0), στο οποίο  ισχύει \(|\nabla f(x,y)|=0\), βλέπουμε ότι το σημείο (0,0) είναι σημείο εγκλωβισμού.
+
+\(\cdot\) Για αρχικό σημείο (-1,1) ο αλγόριθμος συγκλίνει στο ελάχιστο \((-1.5811,0)\) και με τους τρεις τρόπους επιλογής του βήματος, σε 50 επαναλήψεις για σταθερό βήμα, σε 7 για βήμα που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) και σε 8 για βήμα βάσει του κανόνα Armijo.
+
+\(\cdot\) Για αρχικό σημείο (1,-1) ωστόσο, το οποίο βρίσκεται στην πλευρά του μεγίστου, ο αλγόριθμος απομακρύνεται από το μέγιστο προς την επίπεδη περιοχή όπου \(f\approx 0\) και τερματίζει εκεί, αφού \(|\nabla f(x,y)|<\epsilon\), χωρίς να φτάσει στο ελάχιστο. Για σταθερό βήμα αυτό απαιτεί 627 επαναλήψεις, αφού όσο πλησιάζει την επίπεδη περιοχή η κλίση μικραίνει και τα βήματα γίνονται πολύ μικρά, ενώ με τον κανόνα Armijo απαιτεί 63 επαναλήψεις. Με βήμα που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\), ο αλγόριθμος με μία μόνο επανάληψη μεταβαίνει στο σημείο \((-0.22,-1.81)\) όπου ήδη ισχύει \(|\nabla f(x,y)|<\epsilon\). Η συνθήκη τερματισμού \(|\nabla f(x,y)|<\epsilon\) δηλαδή, εξασφαλίζει μόνο ότι βρισκόμαστε κοντά σε στάσιμο σημείο και όχι στο ελάχιστο.
+
+\(\cdot\) Ακόμα, φαίνεται ότι όταν το \(\gamma_{k}\) επιλέγεται ώστε να ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) ή σύμφωνα με τον κανόνα Armijo, απαιτείται πολύ μικρότερος αριθμός επαναλήψεων σε σχέση με το σταθερό βήμα, αφού το βήμα προσαρμόζεται σε κάθε επανάληψη. Η ελαχιστοποίηση της \(f(x_{k}+\gamma_{k}d_{k})\) απαιτεί λίγο λιγότερες επαναλήψεις από τον κανόνα Armijo, όμως κάθε επανάληψή της είναι πιο κοστοβόρα, αφού απαιτεί την εκτέλεση της μεθόδου της διχοτόμου.
+
+\(\cdot\) Η μέθοδος της μέγιστης καθόδου υλοποιείται στο αρχείο steepest\_descent.m, με τη βοήθεια της συνάρτησης descent.m, η οποία υλοποιεί τις επαναλήψεις και των τριών μεθόδων της εργασίας. Η μέθοδος διχοτόμου με χρήση παραγώγων για την ελαχιστοποίηση της \(f(x_{k}+\gamma_{k}d_{k})\) ως προς \(\gamma_{k}\) υπάρχει στο αρχείο minimize\_gammafunction.m και ο κανόνας Armijo στο αρχείο armijo\_step.m.
+
+\section{Θέμα 3:Newton}
+
+Σε αυτό το θέμα θα υλοποιήσουμε τη μέθοδο Newton για να ελαχιστοποιήσουμε τη συνάρτηση \(f(x,y)\) χρησιμοποιώντας ως αρχικά σημεία τα (0,0), (-1,1) και (1,-1). Η μέθοδος αυτή ωστόσο, για να έχει την ιδιότητα της επαναληπτικής καθόδου και να συγκλίνει στο ελάχιστο προϋποθέτει ότι ο εσσιανός πίνακας της \(f(x,y)\), \(\nabla^2 f(x,y)\), είναι θετικά ορισμένος. Για κανένα από τα τρία αρχικά σημεία ο πίνακας δεν είναι θετικά ορισμένος, για \((x_{0},y_{0})=(0,0)\) ο εσσιανός ισούται με τον μηδενικό πίνακα, για 
+\((x_{0},y_{0})=(-1,1)\) προκύπτουν οι ιδιοτιμές του \(s_{1}=4e^{-2}\approx0.541, s_{2}=-8e^{-2}\approx-1.083\) και για \((x_{0},y_{0})=(1,-1)\) \(s_{1}=-4e^{-2}\approx-0.541, s_{2}=8e^{-2}\approx1.083\). Προφανώς για κανένα αρχικό σημείο δεν είναι όλες οι ιδιοτιμές του \(\nabla^2 f(x,y)\) θετικές άρα, ο εσσιανός δεν είναι θετικά ορισμένος και η μέθοδος δεν ορίζεται.
+
+Παρ' όλα αυτά, στο αρχείο newton.m υλοποιείται η μέθοδος newton με αρχικό σημείο \((x_{0},y_{0})=(-1.7,0.2)\) το οποίο, βρίσκεται κοντά στο ελάχιστο ώστε να συγκλίνει η μέθοδος, και βήμα αρχικά σταθερό και ίσο με \(\gamma_{k}=0.1\), μετά τέτοιο ώστε να ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\), με τη μέθοδο της διχοτόμου με χρήση παραγώγων, και τέλος βάσει του κανόνα Armijo, επιλέγοντας τις ίδιες παραμέτρους που χρησιμοποιήσαμε στη μέθοδο της μέγιστης καθόδου. Η κατεύθυνση είναι \(d_{k}=-[\nabla^2 f(x_{k})]^{-1}\nabla f(x_{k})\). Στο σημείο \((-1.7,0.2)\) οι ιδιοτιμές του εσσιανού είναι \(1.38\) και \(2.683\), άρα ο πίνακας είναι θετικά ορισμένος. Και με τους τρεις τρόπους επιλογής του βήματος η μέθοδος συγκλίνει στο ελάχιστο \((-1.5811,0)\), σε 59 επαναλήψεις για σταθερό βήμα και σε μόλις 2 επαναλήψεις για βήμα που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) ή βάσει του κανόνα Armijo. Αυτό οφείλεται στην τετραγωνική σύγκλιση της μεθόδου Newton κοντά στο ελάχιστο, ενώ με σταθερό βήμα \(\gamma_{k}=0.1\) το βήμα Newton, του οποίου το φυσικό μήκος αντιστοιχεί σε \(\gamma_{k}=1\), περιορίζεται στο 10\% και η σύγκλιση γίνεται γραμμική.
+
+\section{Θέμα 4:Levenberg-Marquardt}
+
+Σε αυτό το θέμα θα υλοποιήσουμε τη μέθοδο Levenberg-Marquardt για να ελαχιστοποιήσουμε τη συνάρτηση \(f(x,y)\) χρησιμοποιώντας ως αρχικά σημεία τα (0,0), (-1,1) και (1,-1). Η κατεύθυνση είναι \(d_{k}=-[\nabla^2 f(x_{k})+\mu_{k}I]^{-1}\nabla f(x_{k})\), όπου \(\mu_{k}\) ο μικρότερος μη αρνητικός ακέραιος για τον οποίο ο πίνακας \(\nabla^2 f(x_{k})+\mu_{k}I\) είναι θετικά ορισμένος, δηλαδή όλες οι ιδιοτιμές του είναι θετικές. Έτσι, η μέθοδος ορίζεται και στα σημεία όπου ο εσσιανός δεν είναι θετικά ορισμένος, ενώ κοντά στο ελάχιστο, όπου \(\mu_{k}=0\), ταυτίζεται με τη μέθοδο Newton. Το βήμα θα επιλεγεί αρχικά σταθερό και ίσο με \(\gamma_{k}=0.1\), μετά τέτοιο ώστε να ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) και τέλος βάσει του κανόνα Armijo, επιλέγοντας τις ίδιες παραμέτρους που χρησιμοποιήσαμε στη μέθοδο της μέγιστης καθόδου και Newton. 
+
+\subsection{Σταθερό βήμα}
+
+Επιλέγουμε σταθερό βήμα \(\gamma_{k}=0.1\), όπως κάναμε και στις προηγούμενες μεθόδους και για αρχικό σημείο \((x_{0},y_{0})=(0,0)\) προκύπτουν οι γραφικές παραστάσεις \ref{fig:lm_const_zero1} και \ref{fig:lm_const_zero2}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_const_zero1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο Levenberg-Marquardt για σταθερό \(\gamma_{k}\) με αρχικό σημείο (0,0)}
+    \label{fig:lm_const_zero1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_const_zero2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:lm_const_zero2}
+\end{figure}
+
+Όμοια, για \((x_{0},y_{0})=(-1,1)\) προκύπτουν οι \ref{fig:lm_const_one1} και \ref{fig:lm_const_one2}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_const_one1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο Levenberg-Marquardt για σταθερό \(\gamma_{k}\) με αρχικό σημείο (-1,1)}
+    \label{fig:lm_const_one1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_const_one2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:lm_const_one2}
+\end{figure}
+
+Τέλος, για \((x_{0},y_{0})=(1,-1)\) προκύπτουν οι \ref{fig:lm_const_two1} και \ref{fig:lm_const_two2}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_const_two1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο Levenberg-Marquardt για σταθερό \(\gamma_{k}\) με αρχικό σημείο (1,-1)}
+    \label{fig:lm_const_two1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_const_two2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:lm_const_two2}
+\end{figure}
+
+\subsection{Βήμα που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\)}
+
+Για βήμα που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) με τη μέθοδο της διχοτόμου με χρήση παραγώγου και αρχικό σημείο \((x_{0},y_{0})=(0,0)\) προκύπτουν οι γραφικές παραστάσεις \ref{fig:lm_min_zero1} και \ref{fig:lm_min_zero2}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_min_zero1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο Levenberg-Marquardt για \(\gamma_{k}\) που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) με αρχικό σημείο (0,0)}
+    \label{fig:lm_min_zero1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_min_zero2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:lm_min_zero2}
+\end{figure}
+
+Όμοια, για \((x_{0},y_{0})=(-1,1)\) προκύπτουν οι \ref{fig:lm_min_one1} και \ref{fig:lm_min_one2}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_min_one1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο Levenberg-Marquardt για \(\gamma_{k}\) που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) με αρχικό σημείο (-1,1)}
+    \label{fig:lm_min_one1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_min_one2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:lm_min_one2}
+\end{figure}
+
+Τέλος, για \((x_{0},y_{0})=(1,-1)\) προκύπτουν οι \ref{fig:lm_min_two1} και \ref{fig:lm_min_two2}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_min_two1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο Levenberg-Marquardt για \(\gamma_{k}\) που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) με αρχικό σημείο (1,-1)}
+    \label{fig:lm_min_two1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_min_two2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:lm_min_two2}
+\end{figure}
+
+\subsection{Βήμα σύμφωνα με τον κανόνα armijo}
+
+Για βήμα που επιλέγεται σύμφωνα με τον κανόνα Armijo, με τις ίδιες σταθερές \(a=10^{-4}, \beta=0.4, s=1\), και αρχικό σημείο \((x_{0},y_{0})=(0,0)\) προκύπτουν οι γραφικές παραστάσεις \ref{fig:lm_armijo_zero1} και \ref{fig:lm_armijo_zero2}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_armijo_zero1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο Levenberg-Marquardt για \(\gamma_{k}\) βάσει κανόνα Armijo με αρχικό σημείο (0,0)}
+    \label{fig:lm_armijo_zero1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_armijo_zero2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:lm_armijo_zero2}
+\end{figure}
+
+Όμοια, για \((x_{0},y_{0})=(-1,1)\) προκύπτουν οι \ref{fig:lm_armijo_one1} και \ref{fig:lm_armijo_one2}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_armijo_one1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο Levenberg-Marquardt για \(\gamma_{k}\) βάσει κανόνα Armijo με αρχικό σημείο (-1,1)}
+    \label{fig:lm_armijo_one1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_armijo_one2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:lm_armijo_one2}
+\end{figure}
+
+Τέλος, για \((x_{0},y_{0})=(1,-1)\) προκύπτουν οι \ref{fig:lm_armijo_two1} και \ref{fig:lm_armijo_two2}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_armijo_two1.jpg}
+    \caption{Εύρεση ελαχίστου με τη μέθοδο Levenberg-Marquardt για \(\gamma_{k}\) βάσει κανόνα Armijo με αρχικό σημείο (1,-1)}
+    \label{fig:lm_armijo_two1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{lm_armijo_two2.jpg}
+    \caption{Τιμή συνάρτησης κατά την εύρεση ελαχίστου συναρτήσει των επαναλήψεων}
+    \label{fig:lm_armijo_two2}
+\end{figure}
+
+\subsection{Παρατηρήσεις}
+
+\(\cdot\) Οι παρατηρήσεις που κάνουμε είναι παρόμοιες με αυτές στη μέθοδο της μέγιστης καθόδου στο \ref{comm}. Δηλαδή, για \((x_{0},y_{0})=(0,0)\) ο αλγόριθμος τερματίζει ακαριαία αφού, όπως δείξαμε το σημείο (0,0) είναι σημείο εγκλωβισμού, για \((x_{0},y_{0})=(-1,1)\) ο αλγόριθμος συγκλίνει στο ελάχιστο \((-1.5811,0)\) και για \((x_{0},y_{0})=(1,-1)\) ο αλγόριθμος τερματίζει στην επίπεδη περιοχή όπου \(f\approx 0\) και \(|\nabla f(x,y)|<\epsilon\), χωρίς να φτάσει στο ελάχιστο.
+
+\(\cdot\) Για \((x_{0},y_{0})=(-1,1)\) απαιτούνται 65 επαναλήψεις για σταθερό βήμα, 3 για βήμα που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) και 4 για βήμα βάσει του κανόνα Armijo, ενώ για \((x_{0},y_{0})=(1,-1)\) απαιτούνται 635, 1 και 60 επαναλήψεις αντίστοιχα. Όπως και στη μέθοδο της μέγιστης καθόδου, το σταθερό βήμα απαιτεί πολύ περισσότερες επαναλήψεις από τους άλλους δύο τρόπους επιλογής του βήματος.
+
+\(\cdot\) Ο κώδικας στον οποίο υλοποιείται η μέθοδος Levenberg-Marquardt υπάρχει στο αρχείο levenberg\_marquardt.m.
+
+\section{Σύγκριση των μεθόδων}
+
+Για να συγκρίνουμε τις 2 μεθόδους ως προς την αποτελεσματικότητά τους θα συγκρίνουμε τον αριθμό επαναλήψεων που απαιτούνται μέχρι να τερματίσει ο αλγόριθμος. Έτσι, προκύπτει η γραφική παράσταση \ref{fig:comparison}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{comparison.jpg}
+    \caption{Αριθμός επαναλήψεων των 2 αλγόριθμων για τα τρία αρχικά σημεία και επιλογή του \(\gamma_{k}\) σύμφωνα και με τις τρεις μεθόδους (λογαριθμική κλίμακα)}
+    \label{fig:comparison}
+\end{figure}
+
+\(\cdot\) Το μόνο αρχικό σημείο από το οποίο οι αλγόριθμοι φτάνουν στο ελάχιστο είναι το \((x_{0},y_{0})=(-1,1)\). Από το (0,0) οι αλγόριθμοι τερματίζουν χωρίς καμία επανάληψη, ενώ από το (1,-1) τερματίζουν στην επίπεδη περιοχή όπου \(f\approx 0\), οπότε ο αριθμός επαναλήψεων σε αυτές τις περιπτώσεις δεν αντιστοιχεί σε σύγκλιση στο ελάχιστο.
+
+\(\cdot\) Για \((x_{0},y_{0})=(-1,1)\), με βήμα που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) ή βάσει του κανόνα Armijo, η μέθοδος Levenberg-Marquardt απαιτεί λιγότερες επαναλήψεις (3 και 4) από τη μέθοδο της μέγιστης καθόδου (7 και 8). Αυτό είναι το αναμενόμενο, αφού στη μέθοδο της μέγιστης καθόδου η σύγκλιση γίνεται μέσω διαδοχικών κάθετων ευθύγραμμων τμημάτων, ενώ η Levenberg-Marquardt αξιοποιεί και την πληροφορία του εσσιανού πίνακα και κοντά στο ελάχιστο συμπεριφέρεται όπως η μέθοδος Newton.
+
+\(\cdot\) Με σταθερό βήμα \(\gamma_{k}=0.1\) αντίθετα, η Levenberg-Marquardt απαιτεί περισσότερες επαναλήψεις (65 έναντι 50). Το σταθερό βήμα δηλαδή, περιορίζει το βήμα της Levenberg-Marquardt στο 10\% του φυσικού της βήματος (\(\gamma_{k}=1\)) και χάνεται το πλεονέκτημά της. Συνολικά, οι καλύτερες επιλογές είναι η μέθοδος Levenberg-Marquardt με βήμα που ελαχιστοποιεί τη \(f(x_{k}+\gamma_{k}d_{k})\) ή βάσει του κανόνα Armijo.
+
+\end{flushleft}
+
+\end{document}

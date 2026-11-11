@@ -1,22 +1,18 @@
-function [f] = fitnessFunction(a, c, chr1)
-% fitness function
+function [f] = fitnessFunction(a, c, chr)
+% fitness function: 1 / (total travel time of the network per vehicle)
+% chr has one chromosome per row: the 17 flows x_i and, for the second Genetic Algorithm, V as 18th column
 
-time = zeros(17, 10);
-f = zeros(10, 1);
-total = zeros(1, 10);
+popSize = size(chr, 1);
+f = zeros(popSize, 1);
 
-% for each chromosome
-for j = 1:1:10
-    % for each road of a chromosome
-    for i = 1:1:17
-        time(i, j) = a(i) * chr1(j, i)/(1 - chr1(j, i)/c(i));
-        mul = time(i, j) * chr1(j, i);
-        total(j) = total(j) + mul;
+for j = 1:popSize
+    x = chr(j, 1:17);
+    if size(chr, 2) >= 18
+        V = chr(j, 18);
+    else
+        V = 100;
     end
-end
-
-for k = 1:1:10
-    f(k) = 1/total(k);
+    f(j) = 1 / totalTime(a, c, x, V);
 end
 
 end
