@@ -1,6 +1,6 @@
 # Optimization Techniques
 
-This repository contains the assignments for the **Optimization Techniques** course at ECE AUTH, 2024–2025.
+This repository contains the assignments for the **Optimization Techniques** course at ECE AUTH during the 2024–2025 academic year.
 
 | Folder | Topic | Methods |
 |---|---|---|
